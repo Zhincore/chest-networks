@@ -1,0 +1,43 @@
+{
+	"helpmsg": [
+		"§3§lChestNetworks help:§r",
+		"ChestNetworks allows you to create networks of chests; chests that sort items between themselves.",
+		"This is very useful for creating big storage rooms and warehouses.",
+		"There are two kinds of chests in ChestNetworks:",
+		"  §linput§r  - Chests that don't store items, but only send items into storage chests if possible.",
+		"  §lstorage§r - Chests store specific items",
+		"Storage chest will try to send items, that shouldn't be in it, to chests that should store the unwanted items. (You can put your whole inventory into any chest in the network, and the network will try to sort it all).",
+		"Sorting is triggered by closing the chest's inventory and by hoppers.",
+		"",
+		"§3ChestNetwork command:",
+		"  §c/%s <subcommand>§r - Main command §o(Aliases: §c%s§r§o)",
+		"",
+		"§3Subcommands:",
+		"  §chelp§r - Displays this help §o(Alias: §ch§r§o)",
+		"  §ccreate <new_network_name>§r - Creates new chest network with the given name §o(Alias: §cc§r§o)",
+		"  §cdelete <network_name>§r - Deletes the whole chest network (doesn't ask, double check the name before deleting)",
+		"  §cist§r - Shows a list of your chest networks §o(Aliases: §clistNets, listNetworks§r§o)",
+		"  §caddChest <network_name> <chest_type ('storage' or 'input')> [content...]§r - Adds new chest into the named chest network of given type or changes the setting for already registered chest; if the type is 'storage', you need to specify what items the chest should contain, you can put multiple names of items separated by spaces; §lIf you don't specify any contents, the network will put items that can't go anywhere else into this chest §r(a 'misc.' chest). After entering this command, you will be asked to right-click the desired chest. §o(Alias: §csetChest§r§o)",
+		"  §ccheckChest§r - Shows info about the chest. After entering this command, you will be asked to right-click the desired chest. §o(Alias: §ccheck§r§o)",
+		"  §ccancelSelect§r - Cancels selecting a chest and cancels previously typed ChestNetworks command if you're required to select a chest. §o(Aliases: §ccancel§r§o)"
+	],
+  "dberror": ["§4Accessing database failed, please contact server admin."],
+  "cnet404": ["§cChest network with the name '§b%s§c' doesn't exist."],
+  "cnet409": ["§cThe chest network with name '§b%s§c' already exists."],
+  "cnet425": ["§cYou are already selecting a chest, please finish selecting the chest before selecting next chest."],
+  "ches409": ["§cThis chest is already connected to the network."],
+  "selectc": [
+    "§a§lPlease right-click the chest to proceed.", 
+    "§a§oUse §c§o/cnet cancel§a§o to cancel the selecting proccess."
+  ],
+  "created": ["§aChest network '§b%s§a' has been created."],
+  "chadded": ["§aChest successfully connected to the chest network '§b%s§a'."],
+  "chesrem": ["§cChest removed from chest network '§b%s§c'."],
+  "cnetdel": ["§aChest network '§c%s§a' successfully deleted."],
+  "netlist": ["§3You have these networks: §b%s§3."],
+  "nlistnt": ["§3You don't have any networks."],
+  "chcheck": ["§a§lThis chest is registered:§3\n  Network name: §b%s§3\n  Owner ID: §b%s§3\n  Type: §b%s§3\n  Content: §b%s"],
+  "ccecknt": ["§3This chest is not registered in any network."],
+  "selrmvd": ["§3Selecting of chest cancelled."],
+  "selrmnt": ["§3You weren't selecting a chest."]
+}
