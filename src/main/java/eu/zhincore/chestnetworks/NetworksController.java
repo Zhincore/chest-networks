@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -33,14 +33,14 @@ public class NetworksController {
   }
 
   public Boolean isPlayerSelectQueue(Player player) {
-    String playerID = player.getUniqueId().toString();
-    return playerSelectQueue.containsKey(playerID);
+    String playerId = player.getUniqueId().toString();
+    return playerSelectQueue.containsKey(playerId);
   }
 
   public void cancelPlayerSelect(Player player) {
-    String playerID = player.getUniqueId().toString();
-    if (playerSelectQueue.containsKey(playerID)) {
-      playerSelectQueue.remove(playerID);
+    String playerId = player.getUniqueId().toString();
+    if (playerSelectQueue.containsKey(playerId)) {
+      playerSelectQueue.remove(playerId);
       plugin.messenger.send("selrmvd", player);
       return;
     }
@@ -57,33 +57,33 @@ public class NetworksController {
   }
 
   public List<String> listNets(Player player) {
-    String playerID = player.getUniqueId().toString();
-    return listNets(playerID);
+    String playerId = player.getUniqueId().toString();
+    return listNets(playerId);
   }
 
   @SuppressWarnings("unchecked")
-  public List<String> listNets(String playerID) {
-    if (players.containsKey(playerID)) {
-      return new ArrayList<String>(((JSONObject) players.get(playerID)).keySet());
+  public List<String> listNets(String playerId) {
+    if (players.containsKey(playerId)) {
+      return new ArrayList<String>(((JSONObject) players.get(playerId)).keySet());
     }
     return null;
   }
 
   public List<JSONObject> listChests(Player player, String name) {
-    String playerID = player.getUniqueId().toString();
-    return listChests(playerID, name);
+    String playerId = player.getUniqueId().toString();
+    return listChests(playerId, name);
   }
 
   @SuppressWarnings("unchecked")
-  public List<JSONObject> listChests(String playerID, String netName) {
-    if (players.containsKey(playerID)) {
-      JSONObject network = (JSONObject) players.get(playerID);
+  public List<JSONObject> listChests(String playerId, String netName) {
+    if (players.containsKey(playerId)) {
+      JSONObject network = (JSONObject) players.get(playerId);
       if (network.containsKey(netName)) {
         var chests = new ArrayList<JSONObject>((JSONArray) network.get(netName));
 
         // Add info to each chest, used when referencing the network
         for (var chest : chests) {
-          chest.put("owner", playerID);
+          chest.put("owner", playerId);
           chest.put("network", netName);
         }
         return chests;
@@ -94,11 +94,11 @@ public class NetworksController {
 
   @SuppressWarnings("unchecked")
   public List<JSONObject> listGlobalChests() {
-    List<String> playerIDs = new ArrayList<>(players.keySet());
+    List<String> playerIds = new ArrayList<>(players.keySet());
     List<JSONObject> output = new ArrayList<>();
-    for (String playerID : playerIDs) {
-      for (String networkName : listNets(playerID)) {
-        output.addAll(listChests(playerID, networkName));
+    for (String playerId : playerIds) {
+      for (String networkName : listNets(playerId)) {
+        output.addAll(listChests(playerId, networkName));
       }
     }
     return output;
@@ -106,22 +106,21 @@ public class NetworksController {
 
   @SuppressWarnings("unchecked")
   public List<Location> listGlobalChestLocations() {
-    List<String> playerIDs = new ArrayList<>(players.keySet());
+    List<String> playerIds = new ArrayList<>(players.keySet());
     List<Location> output = new ArrayList<>();
-    for (String playerID : playerIDs) {
-      for (String networkName : listNets(playerID)) {
-        output.addAll(listChests(playerID, networkName)
-            .stream().map(v -> ((Location) Database.jsonToLoc((JSONObject) v.get("location"))))
-            .collect(Collectors.toList()));
+    for (String playerId : playerIds) {
+      for (String networkName : listNets(playerId)) {
+        output.addAll(listChests(playerId, networkName).stream()
+            .map(v -> ((Location) Database.jsonToLoc((JSONObject) v.get("location")))).collect(Collectors.toList()));
       }
     }
     return output;
   }
 
   public void delete(Player player, String name) {
-    String playerID = player.getUniqueId().toString();
-    if (players.containsKey(playerID)) {
-      JSONObject networks = (JSONObject) players.get(playerID);
+    String playerId = player.getUniqueId().toString();
+    if (players.containsKey(playerId)) {
+      JSONObject networks = (JSONObject) players.get(playerId);
       if (networks.containsKey(name)) {
         networks.remove(name);
         plugin.messenger.send("cnetdel", player, name);
@@ -134,11 +133,11 @@ public class NetworksController {
 
   @SuppressWarnings("unchecked")
   public void create(Player player, String name) {
-    String playerID = player.getUniqueId().toString();
-    if (!players.containsKey(playerID)) {
-      players.put(playerID, new JSONObject());
+    String playerId = player.getUniqueId().toString();
+    if (!players.containsKey(playerId)) {
+      players.put(playerId, new JSONObject());
     }
-    JSONObject networks = (JSONObject) players.get(playerID);
+    JSONObject networks = (JSONObject) players.get(playerId);
     if (networks.containsKey(name)) {
       plugin.messenger.send("cnet409", player, name);
       return;
@@ -154,18 +153,18 @@ public class NetworksController {
   }
 
   public void startAddChest(Player player, String name, String type, List<String> content) {
-    String playerID = player.getUniqueId().toString();
-    if (!players.containsKey(playerID)) {
+    String playerId = player.getUniqueId().toString();
+    if (!players.containsKey(playerId)) {
       plugin.messenger.send("cnet404", player, name);
       return;
     }
-    JSONObject networks = (JSONObject) players.get(playerID);
+    JSONObject networks = (JSONObject) players.get(playerId);
     if (!networks.containsKey(name)) {
       plugin.messenger.send("cnet404", player, name);
       return;
     }
 
-    if (playerSelectQueue.containsKey(playerID)) {
+    if (playerSelectQueue.containsKey(playerId)) {
       // Already selecting a chest
       plugin.messenger.send("cnet425", player);
       return;
@@ -179,16 +178,15 @@ public class NetworksController {
   }
 
   private void startPlayerSelect(Player player, String[] data) {
-    String playerID = player.getUniqueId().toString();
-    playerSelectQueue.put(playerID, data);
+    String playerId = player.getUniqueId().toString();
+    playerSelectQueue.put(playerId, data);
     plugin.messenger.send("selectc", player);
   }
 
   public void onPlayerSelected(Player player, Location loc) {
-    String playerID = player.getUniqueId().toString();
-    if (!playerSelectQueue.containsKey(playerID))
-      return;
-    String[] playerData = playerSelectQueue.remove(playerID);
+    String playerId = player.getUniqueId().toString();
+    if (!playerSelectQueue.containsKey(playerId)) return;
+    String[] playerData = playerSelectQueue.remove(playerId);
     switch (playerData[0]) {
       case "add":
         addChest(player, loc, playerData);
@@ -201,9 +199,9 @@ public class NetworksController {
 
   @SuppressWarnings("unchecked")
   private void addChest(Player player, Location loc, String[] playerData) {
-    String playerID = player.getUniqueId().toString();
+    String playerId = player.getUniqueId().toString();
     JSONObject jsonLoc = (JSONObject) Database.locToJson(loc);
-    JSONArray network = (JSONArray) ((JSONObject) players.get(playerID)).get(playerData[1]);
+    JSONArray network = (JSONArray) ((JSONObject) players.get(playerId)).get(playerData[1]);
 
     // Detect is this chest is already registered
     Chest registeredChest = getRegisteredChest(getChestByLoc(loc).getInventory());
@@ -234,12 +232,8 @@ public class NetworksController {
     JSONObject chestData = getChestData(registeredChest.getLocation());
     String type = (String) chestData.get("type");
     JSONArray content = (JSONArray) chestData.get("content");
-    plugin.messenger.send("chcheck", player,
-        (String) chestData.get("network"),
-        (String) chestData.get("owner"),
-        type,
-        type.equals("input") ? "N/A"
-            : content.size() == 0 ? "§oEverything§r" : (String) String.join(", ", content));
+    plugin.messenger.send("chcheck", player, (String) chestData.get("network"), (String) chestData.get("owner"), type,
+        type.equals("input") ? "N/A" : content.size() == 0 ? "§oEverything§r" : (String) String.join(", ", content));
   }
 
   public JSONObject getChestData(Location loc) {
@@ -253,8 +247,7 @@ public class NetworksController {
 
   public void removeChest(Location loc, Player player) {
     JSONObject chest = getChestData(loc);
-    if (chest == null)
-      return;
+    if (chest == null) return;
     ((JSONArray) ((JSONObject) players.get(chest.get("owner"))).get(chest.get("network"))).remove(chest);
     if (player != null) {
       plugin.messenger.send("chesrem", (CommandSender) player, (String) chest.get("network"));
@@ -262,29 +255,51 @@ public class NetworksController {
     database.save();
   }
 
+  public void setSorting(String playerId, String netName, boolean enabled) {
+    JSONArray network = (JSONArray) ((JSONObject) players.get(playerId)).get(netName);
+    for (Object chestDatai : network) {
+      JSONObject chestData = (JSONObject) chestDatai;
+      if (enabled) chestData.put("sort", true);
+      else chestData.remove("sort");
+    }
+    database.save();
+
+    update(playerId, netName);
+  }
+
+  public void update(String playerId, String netName) {
+    JSONArray network = (JSONArray) ((JSONObject) players.get(playerId)).get(netName);
+
+    for (Object chestData : network) {
+      Chest chest = getChestByLoc(Database.jsonToLoc((JSONObject) ((JSONObject) chestData).get("location")));
+      if (chest != null) {
+        update(chest.getInventory());
+      }
+    }
+  }
+
   public void update(Inventory inventory) {
     Chest chest = getRegisteredChest(inventory);
-    if (chest == null)
-      return;
+    if (chest == null) return;
 
     JSONObject chestData = getChestData(chest.getLocation());
     JSONArray network = (JSONArray) ((JSONObject) players.get(chestData.get("owner"))).get(chestData.get("network"));
+    var changedChests = new ArrayList<JSONObject>();
+
     // If it is an input chest
     if (((String) chestData.get("type")).equals("input")) {
       // Try to send all of its items to the storage
-      for (ItemStack item : inventory.getContents()) {
-        if (item == null)
-          continue;
-        placeItems(network, inventory, item);
+      for (ItemStack item : inventory.getStorageContents()) {
+        if (item == null) continue;
+        changedChests.add(placeItems(network, inventory, item));
       }
       // If it is a storage chest
     } else {
       // Find items that do not belong there
-      for (ItemStack item : inventory.getContents()) {
-        if (item == null)
-          continue;
+      for (ItemStack item : inventory.getStorageContents()) {
+        if (item == null) continue;
         if (!((JSONArray) chestData.get("content")).contains(item.getType().toString())) {
-          placeItems(network, inventory, item);
+          changedChests.add(placeItems(network, inventory, item));
         }
       }
       // Trigger update for input chests in case new empty spot exists
@@ -298,50 +313,64 @@ public class NetworksController {
           }
         }
       }
+
+      if (chestData.get("sort") != null) sortInventory(inventory);
+      for (var _chestData : changedChests) {
+        if (_chestData == null || _chestData.get("sort") != null) continue;
+        Chest _chest = getChestByLoc(Database.jsonToLoc((JSONObject) ((JSONObject) _chestData).get("location")));
+        sortInventory(_chest.getInventory());
+      }
     }
   }
 
-  private void placeItems(JSONArray network, Inventory source, ItemStack item) {
-    if (item == null)
-      return;
+  private void sortInventory(Inventory inventory) {
+    if (Bukkit.getPluginManager().getPlugin("ChestSort") != null) {
+      de.jeff_media.chestsort.api.ChestSortAPI.sortInventory(inventory);
+    }
+  }
 
-    Function<Boolean, Boolean> findPlace = fallback -> {
+  private JSONObject placeItems(JSONArray network, Inventory inventory, ItemStack item) {
+    if (item == null) return null;
+
+    Function<Boolean, JSONObject> findPlace = fallback -> {
       for (Object chest : network) {
         JSONObject chestconf = (JSONObject) chest;
         JSONArray chestcontent = (JSONArray) chestconf.get("content");
 
-        if (chestconf.get("type").equals("storage") &&
-            chestcontent.isEmpty() ? fallback : chestcontent.contains(item.getType().toString())) {
+        if (!chestconf.get("type").equals("storage")
+            || !(chestcontent.isEmpty() ? fallback : chestcontent.contains(item.getType().toString())))
+          continue;
 
-          Location loc = Database.jsonToLoc((JSONObject) chestconf.get("location"));
-          Chest target = getChestByLoc(loc);
-          if (target == null)
-            continue;
+        Location loc = Database.jsonToLoc((JSONObject) chestconf.get("location"));
+        Chest target = getChestByLoc(loc);
+        if (target == null) continue;
 
-          Inventory destination = target.getInventory();
-          HashMap<Integer, ItemStack> overflow = destination.addItem(item);
-          Integer remains = 0;
-          if (!overflow.isEmpty()) {
-            remains = overflow.get(0).getAmount();
-          }
-          item.setAmount(remains);
-          return true;
+        Inventory destination = target.getInventory();
+        if (destination.equals(inventory)) continue;
+        HashMap<Integer, ItemStack> overflow = destination.addItem(item);
+        Integer remains = 0;
+        if (!overflow.isEmpty()) {
+          remains = overflow.get(0).getAmount();
         }
+        item.setAmount(remains);
+
+        return chestconf;
       }
 
-      return false;
+      return null;
     };
 
-    if (!findPlace.apply(false)) {
+    var chestconf = findPlace.apply(false);
+    if (chestconf == null) {
       // Try to put the item into misc chest
-      findPlace.apply(true);
+      chestconf = findPlace.apply(true);
     }
+    return chestconf;
   }
 
   private Chest getRegisteredChest(Inventory inventory) {
     Chest[] chests = getChests(inventory);
-    if (chests == null)
-      return null;
+    if (chests == null) return null;
 
     List<Location> registeredChestLocs = listGlobalChestLocations();
     for (Chest chest : chests) {

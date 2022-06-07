@@ -46,7 +46,7 @@ public class EventListener implements Listener {
   }
 
   @EventHandler
-  public void onInventoryCloseEvent​(InventoryCloseEvent ev) {
+  public void onInventoryCloseEvent(InventoryCloseEvent ev) {
     onInventoryUpdate(ev.getInventory());
   }
 

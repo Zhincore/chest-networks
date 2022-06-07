@@ -3,7 +3,6 @@ package eu.zhincore.chestnetworks;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -22,18 +21,19 @@ public class CommandChestNetTabCompleter implements TabCompleter {
     if (networksController.isPlayerSelectQueue((Player) sender)) {
       return Arrays.asList(new String[] { "cancelSelect" });
     } else if (args.length == 1) {
-      return Arrays.asList(new String[] {
-          "help", "create", "delete",
-          "addChest", "setChest",
-          "list", "checkChest"
-      });
+      return Arrays.asList(
+          new String[] { "help", "create", "deleteNetwork", "addChest", "setChest", "list", "checkChest", "sorting" });
     } else {
       switch (args[0]) {
         case "create":
-        case "delete":
+        case "deleteNetwork":
           if (args.length == 2) {
             return Arrays.asList(new String[] { "<NetworkName>" });
           }
+          return new ArrayList<>();
+        case "sorting":
+          if (args.length == 2) return getNets((Player) sender);
+          if (args.length == 3) return Arrays.asList(new String[] { "on", "off" });
           return new ArrayList<>();
         case "setChest":
         case "addChest":

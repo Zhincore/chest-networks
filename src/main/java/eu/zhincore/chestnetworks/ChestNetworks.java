@@ -1,7 +1,6 @@
 package eu.zhincore.chestnetworks;
 
 import java.io.IOException;
-
 import org.bukkit.plugin.java.JavaPlugin;
 import org.json.simple.parser.ParseException;
 

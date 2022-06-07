@@ -2,6 +2,7 @@
 
 .gradle
 /build/
+/bin/
 /target/
 
 # Ignore Gradle GUI config

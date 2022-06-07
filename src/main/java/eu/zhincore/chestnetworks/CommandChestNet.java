@@ -1,7 +1,6 @@
 package eu.zhincore.chestnetworks;
 
 import java.util.Arrays;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -24,8 +23,7 @@ public class CommandChestNet implements CommandExecutor {
       return true;
     }
 
-    if (args.length < 1)
-      return false;
+    if (args.length < 1) return false;
 
     // Sanitize arguments
     for (int i = args.length - 1; i != 0; i--) {
@@ -36,8 +34,7 @@ public class CommandChestNet implements CommandExecutor {
     switch (args[0]) {
       case "h":
       case "help":
-        plugin.messenger.send("helpmsg", (Player) sender,
-            command.getName(), String.join(", ", command.getAliases()));
+        plugin.messenger.send("helpmsg", (Player) sender, command.getName(), String.join(", ", command.getAliases()));
         break;
 
       case "c":
@@ -49,7 +46,7 @@ public class CommandChestNet implements CommandExecutor {
         networksController.create((Player) sender, args[1]);
         break;
 
-      case "delete":
+      case "deleteNetwork":
         if (args.length < 2) {
           sender.sendMessage(ChatColor.GOLD + "Use: " + ChatColor.RED + "/" + label + " delete <name of network>");
           return true;
@@ -59,8 +56,7 @@ public class CommandChestNet implements CommandExecutor {
 
       case "setChest":
       case "addChest":
-        if (args.length < 3
-            || !(args[2].equals("storage") || args[2].equals("input"))) {
+        if (args.length < 3 || !(args[2].equals("storage") || args[2].equals("input"))) {
           sender.sendMessage(ChatColor.GOLD + "Use: " + ChatColor.RED + "/" + label
               + " addChest <name of network> <input/storage> [contents...]");
           return true;
@@ -77,6 +73,17 @@ public class CommandChestNet implements CommandExecutor {
 
       case "listChests":
         // TODO
+        break;
+
+      case "sorting":
+        if (args.length < 3) {
+          sender.sendMessage(
+              ChatColor.GOLD + "Use: " + ChatColor.RED + "/" + label + " sorting <name of network> <on/off>");
+          return true;
+        }
+        var enabled = args[2].equalsIgnoreCase("on");
+        networksController.setSorting(((Player) sender).getUniqueId().toString(), args[1], enabled);
+        sender.sendMessage("Sorting changed");
         break;
 
       case "check":
