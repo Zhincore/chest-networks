@@ -8,10 +8,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class CommandChestNet implements CommandExecutor {
-  private NetworksController networksController;
-  private ChestNetworks plugin;
+  private ChestNetController networksController;
+  private ChestNetworksPlugin plugin;
 
-  public CommandChestNet(ChestNetworks plugin, NetworksController networksController) {
+  public CommandChestNet(ChestNetworksPlugin plugin, ChestNetController networksController) {
     this.networksController = networksController;
     this.plugin = plugin;
   }

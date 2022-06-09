@@ -21,7 +21,7 @@ repositories {
 dependencies {
     compileOnly 'io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT'
     compileOnly 'de.jeff_media:ChestSortAPI:13.0.0-SNAPSHOT'
-    implementation 'co.aikar:taskchain-bukkit:3.7.2'
+    implementation 'co.aikar:acf-paper:0.5.1-SNAPSHOT'
 }
 
 group = 'eu.zhincore.chestnetworks'
@@ -29,8 +29,14 @@ version = '1.0-SNAPSHOT'
 description = 'chestnetworks'
 
 shadowJar {
-    relocate 'co.aikar.taskchain', 'eu.zhincore.chestnetworks.taskchain'
+    relocate 'co.aikar.commands', 'eu.zhincore.chestnetworks.acf'
+    relocate 'co.aikar.locales', 'eu.zhincore.chestnetworks.locales'
     archiveClassifier = "shadowed"
+}
+
+compileJava {
+    options.compilerArgs += ["-parameters"]
+    options.fork = true
 }
 
 java {

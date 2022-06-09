@@ -10,12 +10,12 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-public class Messenger {
+public class ChestNetMessenger {
   private static final String prefix = "§b[§2ChestNetworks§b]§r ";
   private JSONObject messages;
   private JSONParser parser = new JSONParser();
 
-  public Messenger(Reader messagesRaw) throws IOException, ParseException {
+  public ChestNetMessenger(Reader messagesRaw) throws IOException, ParseException {
     messages = (JSONObject) parser.parse(messagesRaw);
   }
 

@@ -20,15 +20,15 @@ import org.bukkit.inventory.ItemStack;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-public class NetworksController {
+public class ChestNetController {
   private HashMap<String, String[]> playerSelectQueue = new HashMap<>();
-  private ChestNetworks plugin;
-  private Database database;
+  private ChestNetworksPlugin plugin;
+  private ChestNetDatabase database;
   private JSONObject players;
 
-  public NetworksController(ChestNetworks plugin) {
+  public ChestNetController(ChestNetworksPlugin plugin) {
     this.plugin = plugin;
-    database = new Database(plugin);
+    database = new ChestNetDatabase(plugin);
     players = (JSONObject) database.data;
   }
 
@@ -111,7 +111,8 @@ public class NetworksController {
     for (String playerId : playerIds) {
       for (String networkName : listNets(playerId)) {
         output.addAll(listChests(playerId, networkName).stream()
-            .map(v -> ((Location) Database.jsonToLoc((JSONObject) v.get("location")))).collect(Collectors.toList()));
+            .map(v -> ((Location) ChestNetDatabase.jsonToLoc((JSONObject) v.get("location"))))
+            .collect(Collectors.toList()));
       }
     }
     return output;
@@ -128,7 +129,6 @@ public class NetworksController {
         return;
       }
     }
-    plugin.messenger.send("cnet404", player, name);
   }
 
   @SuppressWarnings("unchecked")
@@ -200,7 +200,7 @@ public class NetworksController {
   @SuppressWarnings("unchecked")
   private void addChest(Player player, Location loc, String[] playerData) {
     String playerId = player.getUniqueId().toString();
-    JSONObject jsonLoc = (JSONObject) Database.locToJson(loc);
+    JSONObject jsonLoc = (JSONObject) ChestNetDatabase.locToJson(loc);
     JSONArray network = (JSONArray) ((JSONObject) players.get(playerId)).get(playerData[1]);
 
     // Detect is this chest is already registered
@@ -238,7 +238,7 @@ public class NetworksController {
 
   public JSONObject getChestData(Location loc) {
     for (Object chest : listGlobalChests()) {
-      if (Database.jsonToLoc((JSONObject) ((JSONObject) chest).get("location")).equals(loc)) {
+      if (ChestNetDatabase.jsonToLoc((JSONObject) ((JSONObject) chest).get("location")).equals(loc)) {
         return (JSONObject) chest;
       }
     }
@@ -271,7 +271,7 @@ public class NetworksController {
     JSONArray network = (JSONArray) ((JSONObject) players.get(playerId)).get(netName);
 
     for (Object chestData : network) {
-      Chest chest = getChestByLoc(Database.jsonToLoc((JSONObject) ((JSONObject) chestData).get("location")));
+      Chest chest = getChestByLoc(ChestNetDatabase.jsonToLoc((JSONObject) ((JSONObject) chestData).get("location")));
       if (chest != null) {
         update(chest.getInventory());
       }
@@ -307,7 +307,7 @@ public class NetworksController {
       for (Object inputChestData : network) {
         if (((JSONObject) inputChestData).get("type").equals("input")) {
           Chest inputChest = getChestByLoc(
-              Database.jsonToLoc((JSONObject) ((JSONObject) inputChestData).get("location")));
+              ChestNetDatabase.jsonToLoc((JSONObject) ((JSONObject) inputChestData).get("location")));
           if (inputChest != null) {
             update(inputChest.getInventory());
           }
@@ -317,7 +317,8 @@ public class NetworksController {
       if (chestData.get("sort") != null) sortInventory(inventory);
       for (var _chestData : changedChests) {
         if (_chestData == null || _chestData.get("sort") != null) continue;
-        Chest _chest = getChestByLoc(Database.jsonToLoc((JSONObject) ((JSONObject) _chestData).get("location")));
+        Chest _chest = getChestByLoc(
+            ChestNetDatabase.jsonToLoc((JSONObject) ((JSONObject) _chestData).get("location")));
         sortInventory(_chest.getInventory());
       }
     }
@@ -341,7 +342,7 @@ public class NetworksController {
             || !(chestcontent.isEmpty() ? fallback : chestcontent.contains(item.getType().toString())))
           continue;
 
-        Location loc = Database.jsonToLoc((JSONObject) chestconf.get("location"));
+        Location loc = ChestNetDatabase.jsonToLoc((JSONObject) chestconf.get("location"));
         Chest target = getChestByLoc(loc);
         if (target == null) continue;
 

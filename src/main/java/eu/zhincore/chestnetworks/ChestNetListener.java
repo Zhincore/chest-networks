@@ -14,10 +14,10 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 
-public class EventListener implements Listener {
-  private NetworksController networkController;
+public class ChestNetListener implements Listener {
+  private ChestNetController networkController;
 
-  public EventListener(NetworksController networkController) {
+  public ChestNetListener(ChestNetController networkController) {
     this.networkController = networkController;
   }
 

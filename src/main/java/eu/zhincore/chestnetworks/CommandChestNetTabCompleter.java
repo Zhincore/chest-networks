@@ -10,9 +10,9 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 public class CommandChestNetTabCompleter implements TabCompleter {
-  private NetworksController networksController;
+  private ChestNetController networksController;
 
-  public CommandChestNetTabCompleter(NetworksController networksController) {
+  public CommandChestNetTabCompleter(ChestNetController networksController) {
     this.networksController = networksController;
   }
 

@@ -10,12 +10,12 @@ import org.bukkit.Location;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-public class Database {
+public class ChestNetDatabase {
   public JSONObject data;
   private File file;
   private JSONParser parser = new JSONParser();
 
-  public Database(ChestNetworks plugin) {
+  public ChestNetDatabase(ChestNetworksPlugin plugin) {
     file = new File(plugin.getDataFolder(), "data.json");
     reload();
   }
