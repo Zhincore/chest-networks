@@ -202,9 +202,10 @@ public class ChestNetController {
     String playerId = player.getUniqueId().toString();
     JSONObject jsonLoc = (JSONObject) ChestNetDatabase.locToJson(loc);
     JSONArray network = (JSONArray) ((JSONObject) players.get(playerId)).get(playerData[1]);
+    Inventory inv = getChestByLoc(loc).getInventory();
 
     // Detect is this chest is already registered
-    Chest registeredChest = getRegisteredChest(getChestByLoc(loc).getInventory());
+    Chest registeredChest = getRegisteredChest(inv);
     if (registeredChest != null) {
       JSONObject chestData = getChestData(registeredChest.getLocation());
       network.remove(chestData);
@@ -220,6 +221,7 @@ public class ChestNetController {
     network.add(chest);
     database.save();
     plugin.messenger.send("chadded", player, playerData[1]);
+    update(inv);
   }
 
   @SuppressWarnings("unchecked")
@@ -291,7 +293,7 @@ public class ChestNetController {
       // Try to send all of its items to the storage
       for (ItemStack item : inventory.getStorageContents()) {
         if (item == null) continue;
-        changedChests.add(placeItems(network, inventory, item));
+        changedChests.add(placeItems(network, chestData, item));
       }
       // If it is a storage chest
     } else {
@@ -299,7 +301,7 @@ public class ChestNetController {
       for (ItemStack item : inventory.getStorageContents()) {
         if (item == null) continue;
         if (!((JSONArray) chestData.get("content")).contains(item.getType().toString())) {
-          changedChests.add(placeItems(network, inventory, item));
+          changedChests.add(placeItems(network, chestData, item));
         }
       }
       // Trigger update for input chests in case new empty spot exists
@@ -330,8 +332,8 @@ public class ChestNetController {
     }
   }
 
-  private JSONObject placeItems(JSONArray network, Inventory inventory, ItemStack item) {
-    if (item == null) return null;
+  private JSONObject placeItems(JSONArray network, JSONObject originChestData, ItemStack stack) {
+    if (stack == null) return null;
 
     Function<Boolean, JSONObject> findPlace = fallback -> {
       for (Object chest : network) {
@@ -339,21 +341,24 @@ public class ChestNetController {
         JSONArray chestcontent = (JSONArray) chestconf.get("content");
 
         if (!chestconf.get("type").equals("storage")
-            || !(chestcontent.isEmpty() ? fallback : chestcontent.contains(item.getType().toString())))
+            || !(chestcontent.isEmpty() ? fallback : chestcontent.contains(stack.getType().toString())))
           continue;
+
+        // Item is already in suitable destination
+        if (chestconf.equals(originChestData)) return chestconf;
 
         Location loc = ChestNetDatabase.jsonToLoc((JSONObject) chestconf.get("location"));
         Chest target = getChestByLoc(loc);
         if (target == null) continue;
 
         Inventory destination = target.getInventory();
-        if (destination.equals(inventory)) continue;
-        HashMap<Integer, ItemStack> overflow = destination.addItem(item);
-        Integer remains = 0;
+        HashMap<Integer, ItemStack> overflow = destination.addItem(stack.clone());
+
+        int remains = 0;
         if (!overflow.isEmpty()) {
           remains = overflow.get(0).getAmount();
         }
-        item.setAmount(remains);
+        stack.setAmount(remains);
 
         return chestconf;
       }

@@ -3,7 +3,7 @@ version: 1.0-SNAPSHOT
 description: ChestNetworks allows you to create networks of chests; chests that sort items between themselves.
 author: Zhincore
 api-version: 1.18
-main: eu.zhincore.chestnetworks.ChestNetworks
+main: eu.zhincore.chestnetworks.ChestNetworksPlugin
 
 softdepend: [ChestSort]
 
