@@ -2,6 +2,7 @@
 
 .gradle
 /build/
+/debug/
 /bin/
 /target/
 

@@ -1,15 +1,14 @@
 plugins {
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
     id 'java'
+    id 'kr.entree.spigradle' version '2.4.2'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
 apply plugin: 'com.github.johnrengelman.shadow'
 
 repositories {
     mavenCentral()
-    maven {
-        url = uri('https://papermc.io/repo/repository/maven-public/')
-    }
+    paper()
     maven {
         url = uri('https://repo.aikar.co/content/groups/aikar/')
     }
@@ -19,7 +18,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT'
+    compileOnly paper('1.18.2-R0.1-SNAPSHOT')
     compileOnly 'de.jeff_media:ChestSortAPI:13.0.0-SNAPSHOT'
     implementation 'co.aikar:acf-paper:0.5.1-SNAPSHOT'
 }
@@ -27,6 +26,24 @@ dependencies {
 group = 'eu.zhincore.chestnetworks'
 version = '1.0-SNAPSHOT'
 description = 'chestnetworks'
+
+spigot {
+    authors 'Zhincore'
+    softDepends 'ChestSort'
+    apiVersion '1.18'
+    excludeLibraries('acf-paper', 'ChestSortAPI')
+
+    commands {
+        chestnet {
+            aliases = ['cnet', 'chestnetwork', 'chestnetworks']
+            description = 'Create or edit chest sort networks'
+            usage = 'Use /<command> help for help'
+        }
+    }
+    permissions {
+        
+    }
+}
 
 shadowJar {
     relocate 'co.aikar.commands', 'eu.zhincore.chestnetworks.acf'

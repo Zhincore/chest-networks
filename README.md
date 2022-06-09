@@ -30,3 +30,15 @@ ist - Shows a list of your chest networks (Aliases: listNets, listNetworks)
 addChest <network_name> <chest_type ('storage' or 'input')> [content...] - Adds new chest into the named chest network of given type or changes the setting for already registered chest; if the type is 'storage', you need to specify what items the chest should contain, you can put multiple names of items separated by spaces; If you don't specify any contents, the network will put items that can't go anywhere else into this chest (a 'misc.' chest). After entering this command, you will be asked to right-click the desired chest. (Alias: setChest)
 checkChest - Shows info about the chest. After entering this command, you will be asked to right-click the desired chest. (Alias: check)
 cancelSelect - Cancels selecting a chest and cancels previously typed ChestNetworks command if you're required to select a chest. (Aliases: cancel)
+
+## TODO
+
+[ ] Proper file names
+[ ] Use ACF?
+[ ] ACF localization?
+[ ] RAID0 sorting on chests with same content
+[ ] Better separation of concerns
+[ ] Proper (de)serialization
+[ ] YAML translation file
+[ ] Proper help
+[ ] Online manual
