@@ -36,9 +36,11 @@ cancelSelect - Cancels selecting a chest and cancels previously typed ChestNetwo
 [ ] Proper file names
 [ ] Use ACF?
 [ ] ACF localization?
+[X] Own sorting
 [ ] RAID0 sorting on chests with same content
 [ ] Better separation of concerns
-[ ] Proper (de)serialization
+[ ] Proper (de)serialization + data manipulation
+[ ] Storage chest priority
 [ ] YAML translation file
 [ ] Proper help
 [ ] Online manual

@@ -12,15 +12,12 @@ repositories {
     maven {
         url = uri('https://repo.aikar.co/content/groups/aikar/')
     }
-    maven {
-        url = uri('https://hub.jeff-media.com/nexus/repository/jeff-media-public/')
-    }
 }
 
 dependencies {
     compileOnly paper('1.18.2-R0.1-SNAPSHOT')
-    compileOnly 'de.jeff_media:ChestSortAPI:13.0.0-SNAPSHOT'
-    implementation 'co.aikar:acf-paper:0.5.1-SNAPSHOT'
+    // implementation 'co.aikar:acf-paper:0.5.1-SNAPSHOT'
+    // implementation 'co.aikar:taskchain-bukkit:3.7.2'
 }
 
 group = 'eu.zhincore.chestnetworks'
@@ -46,8 +43,9 @@ spigot {
 }
 
 shadowJar {
-    relocate 'co.aikar.commands', 'eu.zhincore.chestnetworks.acf'
-    relocate 'co.aikar.locales', 'eu.zhincore.chestnetworks.locales'
+    // relocate 'co.aikar.commands', 'eu.zhincore.chestnetworks.acf'
+    // relocate 'co.aikar.locales', 'eu.zhincore.chestnetworks.locales'
+    // relocate 'co.aikar.taskchain', 'eu.zhincore.chestnetworks.taskchain'
     archiveClassifier = "shadowed"
 }
 
