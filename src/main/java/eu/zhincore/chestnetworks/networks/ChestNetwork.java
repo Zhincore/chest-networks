@@ -3,7 +3,6 @@ package eu.zhincore.chestnetworks.networks;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.UUID;
 import org.bukkit.inventory.ItemStack;
 import com.google.common.collect.ArrayListMultimap;
 import eu.zhincore.chestnetworks.ChestNetworksPlugin;
@@ -12,19 +11,12 @@ import eu.zhincore.chestnetworks.util.ChestNetSorter;
 import eu.zhincore.chestnetworks.util.SchedulableTask;
 
 public class ChestNetwork {
-  public UUID ownerId;
-  public String name;
   public boolean sort = true;
   public List<NetworkChest> chests = new ArrayList<>();
   private ChestNetworksPlugin plugin;
 
   private transient ArrayListMultimap<List<String>, NetworkChest> indexByContent = ArrayListMultimap.create();
-  private transient SchedulableTask indexingTask = new SchedulableTask(plugin, () -> this.rebuildIndex());
-
-  public ChestNetwork(UUID ownerId, String name) {
-    this.ownerId = ownerId;
-    this.name = name;
-  }
+  private transient SchedulableTask indexingTask = new SchedulableTask(plugin, () -> this.rebuildIndex(), true);
 
   public void addChest(NetworkChest chest) {
     chests.add(chest);

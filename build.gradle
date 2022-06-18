@@ -26,9 +26,8 @@ description = 'chestnetworks'
 
 spigot {
     authors 'Zhincore'
-    softDepends 'ChestSort'
     apiVersion '1.18'
-    excludeLibraries('acf-paper', 'ChestSortAPI')
+    excludeLibraries('acf-paper')
 }
 
 shadowJar {

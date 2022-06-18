@@ -1,1 +1,17 @@
-network_list: "You have created these networks:"
+chestnet:
+  no_networks: You haven't created any networks yet.
+  list: "You have created these networks: <c2>{networks}</c2>."
+  created: Network '<c2>{name}</c2>' created.
+  exists: Network '<c2>{name}</c2>' already exists.
+  not_exists: Network '<c2>{name}</c2>' doesn't exists!
+  deleted: Network '<c2>{name}</c2>' deleted.
+  not_chest: The selected block is not a chest!
+  chest_added: Chest has been successfully added to the network!
+  chest_exists: This chest is already registered in a network!
+  chest_not_exists: This chest isn't registered in any network!
+  chest_info: 
+    "Chest info:"
+    "  Network: <c2>{network}</c2>"
+    "  Owner: <c2>{owner}</c2>"
+    "  Type: <c2>{type}</c2>"
+    "  Content: <c2>{content}</c2>"

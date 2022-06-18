@@ -6,11 +6,13 @@ import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import org.bukkit.Location;
+import com.google.common.collect.HashBasedTable;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import eu.zhincore.chestnetworks.networks.ChestNetworkManager;
 import eu.zhincore.chestnetworks.util.BukkitLocationSerializer;
 import eu.zhincore.chestnetworks.util.ChestNetworksPluginSerializer;
+import eu.zhincore.chestnetworks.util.HashBasedTableSerializer;
 import eu.zhincore.chestnetworks.util.SchedulableTask;
 
 public class Database {
@@ -18,14 +20,16 @@ public class Database {
   private Gson gson;
   public ChestNetworksPlugin plugin;
   public ChestNetworkManager networkManager;
-  private SchedulableTask saveTask = new SchedulableTask(plugin, () -> this.save());
+  private SchedulableTask saveTask;
 
   public Database(ChestNetworksPlugin plugin) {
     this.plugin = plugin;
+    saveTask = new SchedulableTask(plugin, () -> this.save());
     file = new File(plugin.getDataFolder(), "data.json");
     gson = new GsonBuilder().enableComplexMapKeySerialization()
-        .registerTypeAdapter(Location.class, new BukkitLocationSerializer())
-        .registerTypeAdapter(ChestNetworksPlugin.class, new ChestNetworksPluginSerializer(plugin)).create();
+        .registerTypeAdapter(ChestNetworksPlugin.class, new ChestNetworksPluginSerializer(plugin))
+        .registerTypeAdapter(HashBasedTable.class, new HashBasedTableSerializer())
+        .registerTypeAdapter(Location.class, new BukkitLocationSerializer()).create();
   }
 
   public ChestNetworkManager load() {

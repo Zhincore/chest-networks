@@ -13,9 +13,8 @@ public class NetworkChest {
   public List<String> content;
   public int priority = 0;
 
-  public NetworkChest(ChestType type, Location location, ChestNetwork network, List<String> content) {
+  public NetworkChest(ChestType type, ChestNetwork network, List<String> content) {
     this.type = type;
-    this.location = location;
     this.network = network;
     this.content = content;
   }
@@ -28,7 +27,7 @@ public class NetworkChest {
     return chest.getInventory();
   }
 
-  static enum ChestType {
+  public static enum ChestType {
     STORAGE, INPUT
   }
 }

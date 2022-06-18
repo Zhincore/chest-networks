@@ -8,10 +8,21 @@ public class SchedulableTask {
   public ChestNetworksPlugin plugin;
   private BukkitTask task;
   public Runnable runner;
+  public boolean sync = false;
   public int delay;
 
   public SchedulableTask(ChestNetworksPlugin plugin, Runnable runner) {
     this(plugin, runner, 1);
+  }
+
+  public SchedulableTask(ChestNetworksPlugin plugin, Runnable runner, boolean sync, int delay) {
+    this(plugin, runner, delay);
+    this.sync = sync;
+  }
+
+  public SchedulableTask(ChestNetworksPlugin plugin, Runnable runner, boolean sync) {
+    this(plugin, runner);
+    this.sync = sync;
   }
 
   public SchedulableTask(ChestNetworksPlugin plugin, Runnable runner, int delay) {
@@ -22,7 +33,11 @@ public class SchedulableTask {
 
   public void schedule() {
     cancel();
-    task = Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, runner, delay);
+    if (sync) {
+      task = Bukkit.getScheduler().runTaskLater(plugin, runner, delay);
+    } else {
+      task = Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, runner, delay);
+    }
   }
 
   public void cancel() {

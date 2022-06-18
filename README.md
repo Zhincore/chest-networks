@@ -44,3 +44,4 @@ cancelSelect - Cancels selecting a chest and cancels previously typed ChestNetwo
 [ ] YAML translation file
 [ ] Proper help
 [ ] Online manual
+[ ] Integrations (LWC, protection, ...)

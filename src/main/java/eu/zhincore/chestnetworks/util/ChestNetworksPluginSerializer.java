@@ -13,8 +13,8 @@ public class ChestNetworksPluginSerializer
   }
 
   @Override
-  public JsonElement serialize(ChestNetworksPlugin location, Type typeOfSrc, JsonSerializationContext context) {
-    return JsonNull.INSTANCE;
+  public JsonElement serialize(ChestNetworksPlugin plugin, Type typeOfSrc, JsonSerializationContext context) {
+    return new JsonPrimitive("ChestNetworks");
   }
 
   @Override
