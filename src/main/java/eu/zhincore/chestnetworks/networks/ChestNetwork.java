@@ -4,18 +4,16 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import com.google.common.collect.ArrayListMultimap;
 import eu.zhincore.chestnetworks.ChestNetworksPlugin;
 import eu.zhincore.chestnetworks.networks.NetworkChest.ChestType;
 import eu.zhincore.chestnetworks.util.ChestNetSorter;
-import eu.zhincore.chestnetworks.util.ChestNetUtils;
 import eu.zhincore.chestnetworks.util.SchedulableTask;
 
 public class ChestNetwork {
-  public String name;
   public UUID ownerId;
+  public String name;
   public boolean sort = true;
   public List<NetworkChest> chests = new ArrayList<>();
   private ChestNetworksPlugin plugin;
@@ -23,9 +21,9 @@ public class ChestNetwork {
   private transient ArrayListMultimap<List<String>, NetworkChest> indexByContent = ArrayListMultimap.create();
   private transient SchedulableTask indexingTask = new SchedulableTask(plugin, () -> this.rebuildIndex());
 
-  public ChestNetwork(String name, UUID ownerId) {
-    this.name = name;
+  public ChestNetwork(UUID ownerId, String name) {
     this.ownerId = ownerId;
+    this.name = name;
   }
 
   public void addChest(NetworkChest chest) {
@@ -43,6 +41,7 @@ public class ChestNetwork {
   public void rebuildIndex() {
     indexByContent.clear();
 
+    // Create index
     for (var chest : chests) {
       indexByContent.get(chest.content).add(chest);
     }
@@ -54,50 +53,60 @@ public class ChestNetwork {
     }
   }
 
-  public HashSet<Inventory> update(NetworkChest chest) {
-    var chestBlock = ChestNetUtils.getChestByLocation(chest.location);
-    if (chestBlock == null) {
+  public HashSet<NetworkChest> update(NetworkChest chest) {
+    var inventory = chest.getInventory();
+    if (inventory == null) {
       // The chest doesn't exist anymore, remove it
       removeChest(chest);
       return null;
     }
-
-    var inventory = chestBlock.getInventory();
-    var updatedInvs = new HashSet<Inventory>();
+    var updatedChests = new HashSet<NetworkChest>();
 
     switch (chest.type) {
       case INPUT:
         for (var stack : inventory.getStorageContents()) {
           if (stack == null) continue;
-          updatedInvs.add(storeItemStack(stack, inventory));
+          updatedChests.add(storeItemStack(stack, chest));
         }
         break;
 
       case STORAGE:
         for (var stack : inventory.getStorageContents()) {
           if (stack == null || !chest.content.contains(stack.getType().toString())) continue;
-          updatedInvs.add(storeItemStack(stack, inventory));
+          updatedChests.add(storeItemStack(stack, chest));
         }
 
         // If a change happened, update input chests in case new spot was made
-        if (!updatedInvs.isEmpty()) {
+        if (!updatedChests.isEmpty()) {
           updateInputChests();
         }
         break;
     }
 
-    if (!updatedInvs.isEmpty()) {
-      ChestNetSorter.sortInventories(inventory);
-      for (var updatedInv : updatedInvs) {
-        ChestNetSorter.sortInventories(updatedInv);
-      }
+    if (sort && !updatedChests.isEmpty()) {
+      updatedChests.add(chest);
+      sortChests(updatedChests.toArray(new NetworkChest[0]));
     }
 
-    return updatedInvs;
+    return updatedChests;
   }
 
-  private HashSet<Inventory> updateInputChests() {
-    var updatedInvs = new HashSet<Inventory>();
+  public void sortChests(NetworkChest... chests) {
+    var contentDone = new HashSet<List<String>>();
+
+    // Sort RAID0s
+    for (var chest : chests) {
+      if (!contentDone.add(chest.content)) continue;
+
+      var raid0 = indexByContent.get(chest.content);
+      raid0.sort((a, b) -> a.priority - b.priority);
+
+      ChestNetSorter.sort(raid0.toArray(new NetworkChest[0]));
+    }
+  }
+
+  private HashSet<NetworkChest> updateInputChests() {
+    var updatedInvs = new HashSet<NetworkChest>();
 
     for (var chest : chests) {
       if (chest.type == ChestType.INPUT) {
@@ -107,27 +116,22 @@ public class ChestNetwork {
     return updatedInvs;
   }
 
-  public Inventory storeItemStack(ItemStack stack) {
+  public NetworkChest storeItemStack(ItemStack stack) {
     return storeItemStack(stack, null);
   }
 
-  private Inventory storeItemStack(ItemStack stack, Inventory originInventory) {
-    return storeItemStack(stack, originInventory, false);
+  private NetworkChest storeItemStack(ItemStack stack, NetworkChest originChest) {
+    return storeItemStack(stack, originChest, false);
   }
 
-  private Inventory storeItemStack(ItemStack stack, Inventory originInventory, boolean useMisc) {
+  private NetworkChest storeItemStack(ItemStack stack, NetworkChest originChest, boolean useMisc) {
     for (var chest : chests) {
-      if (chest.type != ChestType.STORAGE
+      if (chest == originChest || chest.type != ChestType.STORAGE
           || !(chest.content.isEmpty() ? useMisc : chest.content.contains(stack.getType().toString())))
         continue;
 
-      var targetChest = ChestNetUtils.getChestByLocation(chest.location);
-      if (targetChest == null) continue;
-
-      var destination = targetChest.getInventory();
-
-      // Item is already in suitable destination
-      if (destination.equals(originInventory)) return destination;
+      var destination = chest.getInventory();
+      if (destination == null) continue;
 
       var overflow = destination.addItem(stack.clone());
 
@@ -137,10 +141,10 @@ public class ChestNetwork {
       }
       stack.setAmount(remains);
 
-      return destination;
+      return chest;
     }
 
-    if (!useMisc) return storeItemStack(stack, originInventory, true);
+    if (!useMisc) return storeItemStack(stack, originChest, true);
     return null;
   }
 }

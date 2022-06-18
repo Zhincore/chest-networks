@@ -16,7 +16,7 @@ repositories {
 
 dependencies {
     compileOnly paper('1.18.2-R0.1-SNAPSHOT')
-    // implementation 'co.aikar:acf-paper:0.5.1-SNAPSHOT'
+    implementation 'co.aikar:acf-paper:0.5.1-SNAPSHOT'
     // implementation 'co.aikar:taskchain-bukkit:3.7.2'
 }
 
@@ -29,22 +29,11 @@ spigot {
     softDepends 'ChestSort'
     apiVersion '1.18'
     excludeLibraries('acf-paper', 'ChestSortAPI')
-
-    commands {
-        chestnet {
-            aliases = ['cnet', 'chestnetwork', 'chestnetworks']
-            description = 'Create or edit chest sort networks'
-            usage = 'Use /<command> help for help'
-        }
-    }
-    permissions {
-        
-    }
 }
 
 shadowJar {
-    // relocate 'co.aikar.commands', 'eu.zhincore.chestnetworks.acf'
-    // relocate 'co.aikar.locales', 'eu.zhincore.chestnetworks.locales'
+    relocate 'co.aikar.commands', 'eu.zhincore.chestnetworks.acf'
+    relocate 'co.aikar.locales', 'eu.zhincore.chestnetworks.locales'
     // relocate 'co.aikar.taskchain', 'eu.zhincore.chestnetworks.taskchain'
     archiveClassifier = "shadowed"
 }

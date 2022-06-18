@@ -40,7 +40,7 @@ public class Database {
     } catch (Exception ex) {
       ex.printStackTrace();
     }
-    return networkManager = new ChestNetworkManager();
+    return networkManager = new ChestNetworkManager(plugin);
   }
 
   public void scheduleSave() {

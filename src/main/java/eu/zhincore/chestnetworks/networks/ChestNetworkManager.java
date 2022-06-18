@@ -1,17 +1,30 @@
 package eu.zhincore.chestnetworks.networks;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import org.bukkit.inventory.Inventory;
+import com.google.common.collect.HashBasedTable;
+import eu.zhincore.chestnetworks.ChestNetworksPlugin;
 
 public class ChestNetworkManager {
-  public Map<UUID, ChestNetwork> networks = new HashMap<>();
+  public HashBasedTable<UUID, String, ChestNetwork> networks = HashBasedTable.create();
+  private ChestNetworksPlugin plugin;
+
+  public ChestNetworkManager(ChestNetworksPlugin plugin) {
+    this.plugin = plugin;
+  }
+
+  public boolean create(UUID playerId, String netName) {
+    var playerNets = networks.row(playerId);
+    if (playerNets.containsKey(netName)) return false;
+    playerNets.put(netName, new ChestNetwork(playerId, netName));
+    plugin.database.scheduleSave();
+    return true;
+  }
 
   public boolean update(UUID playerId, String netName) {
-    var network = networks.get(playerId);
+    var network = networks.row(playerId).get(netName);
     if (network == null) return false;
     network.update();
     return true;
