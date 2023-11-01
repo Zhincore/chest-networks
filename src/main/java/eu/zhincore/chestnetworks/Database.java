@@ -6,20 +6,18 @@ import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import org.bukkit.Location;
-import com.google.common.collect.HashBasedTable;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import eu.zhincore.chestnetworks.networks.ChestNetworkManager;
+import eu.zhincore.chestnetworks.networks.ChestNetworksManager;
 import eu.zhincore.chestnetworks.util.BukkitLocationSerializer;
-import eu.zhincore.chestnetworks.util.ChestNetworksPluginSerializer;
-import eu.zhincore.chestnetworks.util.HashBasedTableSerializer;
+import eu.zhincore.chestnetworks.util.ChestNetworksManagerSerializer;
 import eu.zhincore.chestnetworks.util.SchedulableTask;
 
 public class Database {
   private File file;
   private Gson gson;
   public ChestNetworksPlugin plugin;
-  public ChestNetworkManager networkManager;
+  public ChestNetworksManager networkManager;
   private SchedulableTask saveTask;
 
   public Database(ChestNetworksPlugin plugin) {
@@ -27,24 +25,23 @@ public class Database {
     saveTask = new SchedulableTask(plugin, () -> this.save());
     file = new File(plugin.getDataFolder(), "data.json");
     gson = new GsonBuilder().enableComplexMapKeySerialization()
-        .registerTypeAdapter(ChestNetworksPlugin.class, new ChestNetworksPluginSerializer(plugin))
-        .registerTypeAdapter(HashBasedTable.class, new HashBasedTableSerializer())
+        .registerTypeAdapter(ChestNetworksManager.class, new ChestNetworksManagerSerializer(plugin))
         .registerTypeAdapter(Location.class, new BukkitLocationSerializer()).create();
   }
 
-  public ChestNetworkManager load() {
+  public ChestNetworksManager load() {
     try {
       if (!file.getParentFile().exists()) {
         file.getParentFile().mkdirs();
       }
       if (file.exists()) {
         Reader reader = new InputStreamReader(new FileInputStream(file), "UTF-8");
-        return networkManager = gson.fromJson(reader, ChestNetworkManager.class);
+        return networkManager = gson.fromJson(reader, ChestNetworksManager.class);
       }
     } catch (Exception ex) {
       ex.printStackTrace();
     }
-    return networkManager = new ChestNetworkManager(plugin);
+    return networkManager = new ChestNetworksManager(plugin);
   }
 
   public void scheduleSave() {

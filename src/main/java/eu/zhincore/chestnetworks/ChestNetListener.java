@@ -1,8 +1,9 @@
 package eu.zhincore.chestnetworks;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
-import org.bukkit.Location;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -68,7 +69,24 @@ public class ChestNetListener {
           cmdManager.sendMessage(player, MessageType.ERROR, MessageKey.of("chestnet.chest_not_exists"));
           return;
         }
-        cmdManager.sendMessage(player, MessageType.ERROR, MessageKey.of("chestnet.chest_info"), "network");
+
+        var replacements = new ArrayList<String>();
+
+        replacements.add("network");
+        replacements.add(chestData.network.name);
+
+        var owner = Bukkit.getOfflinePlayer(chestData.network.owner);
+        replacements.add("owner");
+        replacements.add(owner == null ? "unknown" : owner.getName());
+
+        replacements.add("type");
+        replacements.add(chestData.type.toString());
+
+        replacements.add("content");
+        replacements.add(chestData.content.toString());
+
+        cmdManager.sendMessage(player, MessageType.ERROR, MessageKey.of("chestnet.chest_info"),
+            replacements.toArray(new String[0]));
         break;
     }
   }

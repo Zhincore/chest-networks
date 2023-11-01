@@ -10,7 +10,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.google.common.collect.Lists;
 import co.aikar.commands.MessageType;
 import co.aikar.commands.PaperCommandManager;
-import eu.zhincore.chestnetworks.networks.ChestNetworkManager;
+import eu.zhincore.chestnetworks.networks.ChestNetworksManager;
 
 public class ChestNetworksPlugin extends JavaPlugin {
   public Database database;
@@ -24,12 +24,12 @@ public class ChestNetworksPlugin extends JavaPlugin {
 
     // Initialize ACF
     commandManager = new PaperCommandManager(this);
-    commandManager.enableUnstableAPI("help");
+    // commandManager.enableUnstableAPI("help");
     commandManager.usePerIssuerLocale(false);
     commandManager.setFormat(MessageType.INFO, 1, ChatColor.GREEN);
 
     commandManager.registerDependency(PaperCommandManager.class, commandManager);
-    commandManager.registerDependency(ChestNetworkManager.class, database.networkManager);
+    commandManager.registerDependency(ChestNetworksManager.class, database.networkManager);
 
     // Initialize ACF locales
     var locales = commandManager.getLocales();
@@ -62,5 +62,7 @@ public class ChestNetworksPlugin extends JavaPlugin {
 
   @Override
   public void onDisable() {
+    database = null;
+    commandManager = null;
   }
 }

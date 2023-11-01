@@ -6,7 +6,7 @@ import co.aikar.commands.MessageType;
 import co.aikar.commands.PaperCommandManager;
 import co.aikar.commands.annotation.*;
 import co.aikar.locales.MessageKey;
-import eu.zhincore.chestnetworks.networks.ChestNetworkManager;
+import eu.zhincore.chestnetworks.networks.ChestNetworksManager;
 
 @CommandAlias("cnet|chestnet|chestnetworks")
 @CommandPermission("chestnetworks.command")
@@ -15,14 +15,14 @@ public class ChestNetCommand extends BaseCommand {
   private PaperCommandManager cmdManager;
 
   @Dependency
-  private ChestNetworkManager networkManager;
+  private ChestNetworksManager networkManager;
 
   @Subcommand("list")
   public void list(Player player) {
     var networks = networkManager.listNetworks(player.getUniqueId());
 
     if (networks.isEmpty()) {
-      cmdManager.sendMessage(player, MessageType.ERROR, MessageKey.of("chestnet.no_networks"));
+      cmdManager.sendMessage(player, MessageType.INFO, MessageKey.of("chestnet.no_networks"));
     } else {
       var replacements = new String[] { "{networks}", String.join(", ", networks) };
       cmdManager.sendMessage(player, MessageType.INFO, MessageKey.of("chestnet.list"), replacements);

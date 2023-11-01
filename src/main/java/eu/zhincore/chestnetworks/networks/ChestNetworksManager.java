@@ -10,11 +10,11 @@ import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.ImmutableSet;
 import eu.zhincore.chestnetworks.ChestNetworksPlugin;
 
-public class ChestNetworkManager {
-  private HashBasedTable<String, String, ChestNetwork> networks = HashBasedTable.create();
+public class ChestNetworksManager {
+  public HashBasedTable<String, String, ChestNetwork> networks = HashBasedTable.create();
   private ChestNetworksPlugin plugin;
 
-  public ChestNetworkManager(ChestNetworksPlugin plugin) {
+  public ChestNetworksManager(ChestNetworksPlugin plugin) {
     this.plugin = plugin;
   }
 
@@ -30,7 +30,12 @@ public class ChestNetworkManager {
   public boolean create(UUID playerId, String netName) {
     var playerNets = networks.row(playerId.toString());
     if (playerNets.containsKey(netName)) return false;
-    playerNets.put(netName, new ChestNetwork());
+
+    var net = new ChestNetwork(plugin);
+    net.name = netName;
+    net.owner = playerId;
+    playerNets.put(netName, net);
+
     plugin.database.scheduleSave();
     return true;
   }
